@@ -3,9 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="UniRescue - thuê máy tính, sạc laptop, bút trình chiếu và phụ kiện học tập ngay trong trường. Mô hình demo CSC00004.">
+<meta name="description" content="UniSOS - thuê máy tính, sạc laptop, bút trình chiếu và phụ kiện học tập ngay trong trường. Mô hình demo CSC00004.">
 <meta name="theme-color" content="#ffffff">
-<title>UniRescue — Thuê thiết bị học tập ngay trong trường</title>
+<title>UniSOS — Thuê thiết bị học tập ngay trong trường</title>
+<script>
+  document.documentElement.classList.add('has-js');
+  /* Nếu script chính gặp lỗi, bỏ mọi trạng thái ẩn để nội dung vẫn đọc được. */
+  window.addEventListener('error', function () {
+    document.documentElement.classList.add('reveal-failsafe');
+  });
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -171,12 +178,49 @@
     border: 1px solid var(--line);
     border-radius: 16px;
     background: #fff;
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    transition: opacity .45s ease, transform .2s ease, box-shadow .2s ease, border-color .2s ease;
   }
   .card:hover { transform: translateY(-4px); border-color: #dbe3ec; box-shadow: var(--shadow-lift, 0 18px 40px -26px rgba(15,23,42,.45)); }
   .card.is-highlight { border-color: #c7d2fe; box-shadow: 0 0 0 2px var(--accent-soft), 0 18px 40px -26px rgba(15, 23, 42, .45); }
   .card-media { position: relative; background: var(--surface); }
-  .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .6s cubic-bezier(.22, .61, .36, 1);
+  }
+  /* .card-media is a button so the photo can open the lightbox */
+  .card-media {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    cursor: zoom-in;
+  }
+  .card-media:focus-visible { outline: 2px solid #4f46e5; outline-offset: -2px; }
+
+  .zoom-hint {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .92);
+    color: #334155;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .16);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+  }
+  .card:hover .zoom-hint,
+  .card-media:focus-visible .zoom-hint { opacity: 1; transform: none; }
+
   .card-badge {
     position: absolute;
     top: 10px;
@@ -223,6 +267,34 @@
   #cart-root.is-open #cart-overlay { opacity: 1; }
   #cart-root.is-open #cart-panel { transform: translateX(0); }
 
+  /* ---------- Lightbox ---------- */
+  #lightbox-overlay { transition: opacity .22s ease; }
+  #lightbox-img {
+    opacity: 0;
+    transform: scale(.965);
+    transition: opacity .25s ease, transform .32s cubic-bezier(.22, .61, .36, 1);
+  }
+  #lightbox.is-open #lightbox-overlay { opacity: 1; }
+  #lightbox.is-open #lightbox-img { opacity: 1; transform: scale(1); }
+
+  .lb-nav {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, .55);
+    color: #fff;
+    backdrop-filter: blur(6px);
+    transition: background-color .15s ease, border-color .15s ease;
+  }
+  .lb-nav:hover { background: rgba(15, 23, 42, .8); border-color: rgba(255, 255, 255, .45); }
+  .lb-nav:disabled { opacity: .3; pointer-events: none; }
+  .lb-nav:focus-visible { box-shadow: 0 0 0 3px rgba(255, 255, 255, .3); }
+
   /* ---------- Toast ---------- */
   #toast {
     opacity: 0;
@@ -253,6 +325,67 @@
   .jump-arrow { transition: transform .15s ease, color .15s ease; }
   .jump:focus-visible { box-shadow: 0 0 0 3px rgba(79, 70, 229, .22); border-radius: 8px; }
 
+  /* ---------- Media frames ---------- */
+  .frame {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+  }
+  .frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .65s cubic-bezier(.22, .61, .36, 1);
+  }
+  .frame:hover img { transform: scale(1.04); }
+  .frame-shadow { box-shadow: 0 26px 54px -38px rgba(15, 23, 42, .6); }
+
+  /* ---------- Scroll reveal ----------
+     Chỉ ẩn khi JS đã chạy (.has-js). Nếu JS lỗi hoặc bị tắt, nội dung vẫn hiện. */
+  .has-js .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .5s cubic-bezier(.22, .61, .36, 1),
+                transform .5s cubic-bezier(.22, .61, .36, 1);
+  }
+  .has-js .reveal.is-in { opacity: 1; transform: none; }
+
+  /* Cards only fade in, so the hover lift is never overridden */
+  .has-js .card[data-reveal] { opacity: 0; }
+  .has-js .card[data-reveal].is-in { opacity: 1; }
+
+  /* Lưới an toàn: script lỗi thì hiện tất cả */
+  .reveal-failsafe .reveal,
+  .reveal-failsafe .card[data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* ---------- Micro-interactions ---------- */
+  .card:hover .card-media img { transform: scale(1.045); }
+  .btn-primary svg, .card-cta svg { transition: transform .18s ease; }
+  .btn-primary:hover svg { transform: translateX(3px); }
+  .card-cta:hover svg { transform: rotate(90deg); }
+
+  .cart-row { transition: background-color .15s ease; }
+  .cart-row:hover { background: #f8fafc; }
+
+  @keyframes badge-pop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+  .badge-pop { animation: badge-pop .36s cubic-bezier(.34, 1.56, .64, 1); }
+
+  @keyframes step-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+  .step-in { animation: step-in .3s cubic-bezier(.22, .61, .36, 1) both; }
+
   /* Inputs at 16px on small screens so iOS does not zoom on focus */
   @media (max-width: 640px) {
     .field { font-size: 16px; }
@@ -265,8 +398,18 @@
       transition-duration: .01ms !important;
       scroll-behavior: auto !important;
     }
+    .has-js .reveal { opacity: 1; transform: none; }
+    .has-js .card[data-reveal] { opacity: 1; }
+    .frame:hover img, .card:hover .card-media img { transform: none; }
   }
 </style>
+
+<noscript>
+  <style>
+    .reveal { opacity: 1 !important; transform: none !important; }
+    .card[data-reveal] { opacity: 1 !important; }
+  </style>
+</noscript>
 </head>
 
 <body class="font-sans antialiased">
@@ -285,6 +428,9 @@
   <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></symbol>
 </svg>
 
 <!-- ============ DEMO BAR ============ -->
@@ -300,11 +446,9 @@
 <header id="site-header" class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md transition-shadow duration-200">
   <div class="mx-auto flex h-16 max-w-content items-center justify-between gap-4 px-5 sm:px-8">
 
-    <a href="#top" class="flex items-center gap-2.5">
-      <span class="grid h-8 w-8 place-items-center rounded-[9px] bg-indigo-600 text-white">
-        <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>
-      </span>
-      <span class="text-[17px] font-semibold tracking-[-0.02em] text-slate-900">UniRescue</span>
+    <a href="#top" class="flex items-center gap-2.5" aria-label="UniSOS — về đầu trang">
+      <img src="assets/unisos-logo.png" alt="UniSOS" class="h-14 w-12 object-contain">
+      <span class="text-xs font-medium text-slate-600">PateFam · Trạm cứu hộ học đường</span>
     </a>
 
     <nav class="hidden items-center gap-0.5 md:flex" aria-label="Điều hướng chính">
@@ -345,17 +489,22 @@
 
   <!-- ============ HERO ============ -->
   <section class="border-b border-slate-200/70">
-    <div class="mx-auto grid max-w-content gap-12 px-5 pb-16 pt-12 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-20 lg:pt-20">
+    <div class="mx-auto grid max-w-content gap-12 px-5 pb-14 pt-12 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-16 lg:pt-16">
 
-      <div class="lg:col-span-7">
-        <h1 class="max-w-[19ch] text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] text-slate-900 sm:text-[46px] lg:text-[56px]">
-          Mượn nhanh thiết bị học tập, ngay trong trường.
+      <div class="reveal flex flex-col lg:col-span-7" data-reveal>
+        <h1 class="max-w-[20ch] text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] text-slate-900 sm:text-[46px] lg:text-[56px]">
+          Mượn thiết bị học tập, ngay trong trường.
         </h1>
 
         <p class="mt-5 max-w-[52ch] text-[15px] leading-[1.65] text-slate-600 sm:text-[16.5px]">
           Máy tính, sạc laptop, bút trình chiếu và phụ kiện nhỏ có sẵn để thuê theo ngày.
           Không phải rời trường, không phải mua món chỉ dùng một lần.
         </p>
+
+        <div class="mt-4 border-l-2 border-indigo-500 pl-4">
+          <p class="text-[17px] font-semibold text-slate-900">Thi không thiếu, điểm không xiêu!</p>
+          <p class="mt-1 text-[14px] text-slate-600">Đồ dùng sẵn tay, tự tin hôm nay!</p>
+        </div>
 
         <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
           <a href="#products" class="btn btn-primary">
@@ -376,13 +525,19 @@
           </div>
           <div class="bg-white pl-4 py-4">
             <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">Điểm nhận</dt>
-            <dd class="mt-1.5 text-[15px] font-medium text-slate-900">Sảnh tòa nhà I</dd>
+            <dd class="mt-1.5 text-[15px] font-medium text-slate-900">Sảnh nhà I</dd>
           </div>
         </dl>
       </div>
 
-      <div class="lg:col-span-5 lg:border-l lg:border-slate-200/70 lg:pl-10">
-        <div class="flex items-baseline justify-between gap-3">
+      <div class="reveal lg:col-span-5 lg:border-l lg:border-slate-200/70 lg:pl-10" data-reveal data-reveal-delay="90">
+        <figure class="frame frame-shadow max-h-[400px]" style="aspect-ratio: 16 / 10;">
+          <img src="https://images.pexels.com/photos/4087270/pexels-photo-4087270.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1000"
+               alt="Laptop, sạc và phụ kiện trên bàn học — Ảnh: Luna Lovegood on Pexels"
+               width="1000" height="625" loading="eager" decoding="async">
+        </figure>
+
+        <div class="mt-7 flex items-baseline justify-between gap-3">
           <h2 class="text-[13px] font-semibold text-slate-900">Thiếu gì, mượn đó</h2>
           <span class="text-[12px] text-slate-400">Giá theo ngày</span>
         </div>
@@ -449,7 +604,7 @@
   <section id="products" class="border-b border-slate-200/70">
     <div class="mx-auto max-w-content px-5 py-14 sm:px-8 lg:py-20">
 
-      <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
+      <div class="reveal flex flex-wrap items-end justify-between gap-x-8 gap-y-5" data-reveal>
         <div>
           <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Thiết bị cho thuê</h2>
           <p id="result-count" class="mt-2 text-[13.5px] text-slate-500" aria-live="polite">Đang tải…</p>
@@ -479,7 +634,7 @@
   <!-- ============ HOW IT WORKS ============ -->
   <section id="workflow">
     <div class="mx-auto max-w-content px-5 py-14 sm:px-8 lg:py-20">
-      <div class="max-w-[62ch]">
+      <div class="reveal max-w-[62ch]" data-reveal>
         <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Cách mượn</h2>
         <p class="mt-2.5 text-[14.5px] leading-relaxed text-slate-500">
           Ba bước để có yêu cầu thuê. Bản demo dừng lại ở bước gửi yêu cầu; khâu nhận và hoàn trả thiết bị chưa được triển khai.
@@ -487,22 +642,22 @@
       </div>
 
       <ol class="mt-10 grid gap-8 border-t border-slate-200/70 pt-8 sm:grid-cols-3 sm:gap-0">
-        <li class="sm:pr-10">
-          <p class="text-[12px] font-medium tabular-nums text-slate-300">01</p>
+        <li class="reveal sm:pr-10" data-reveal>
+          <p class="text-[12px] font-medium tabular-nums text-slate-400">01</p>
           <h3 class="mt-2 text-[15px] font-semibold text-slate-900">Chọn thiết bị và thời hạn</h3>
           <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">
             Lọc theo danh mục, xem giá thuê và phụ kiện đi kèm của từng món.
           </p>
         </li>
-        <li class="sm:border-l sm:border-slate-200/70 sm:px-10">
-          <p class="text-[12px] font-medium tabular-nums text-slate-300">02</p>
+        <li class="reveal sm:border-l sm:border-slate-200/70 sm:px-10" data-reveal data-reveal-delay="80">
+          <p class="text-[12px] font-medium tabular-nums text-slate-400">02</p>
           <h3 class="mt-2 text-[15px] font-semibold text-slate-900">Điền thông tin nhận</h3>
           <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">
             Mã số sinh viên, điểm hẹn và phương thức thanh toán mô phỏng.
           </p>
         </li>
-        <li class="sm:border-l sm:border-slate-200/70 sm:pl-10">
-          <p class="text-[12px] font-medium tabular-nums text-slate-300">03</p>
+        <li class="reveal sm:border-l sm:border-slate-200/70 sm:pl-10" data-reveal data-reveal-delay="160">
+          <p class="text-[12px] font-medium tabular-nums text-slate-400">03</p>
           <h3 class="mt-2 text-[15px] font-semibold text-slate-900">Nhận tại điểm hẹn</h3>
           <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">
             Đối chiếu thiết bị khi nhận và trả lại đúng thời hạn đã đăng ký.
@@ -515,18 +670,31 @@
   <!-- ============ ABOUT ============ -->
   <section id="about" class="border-y border-slate-200/70 bg-slate-50/80">
     <div class="mx-auto grid max-w-content gap-10 px-5 py-14 sm:px-8 lg:grid-cols-12 lg:gap-16 lg:py-20">
-      <div class="lg:col-span-6">
+      <div class="reveal lg:col-span-6" data-reveal>
         <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Về nhóm</h2>
         <p class="mt-4 max-w-[52ch] text-[14.5px] leading-[1.7] text-slate-600">
-          UniRescue là đồ án môn học CSC00004 của Khoa Công nghệ Thông tin, Trường Đại học Khoa học Tự nhiên – ĐHQG-HCM.
-          Nhóm xây dựng mô hình cho thuê thiết bị học tập cỡ nhỏ đặt trong trường, dành cho những lúc sinh viên thiếu đúng một món trước giờ học.
+          <strong class="font-semibold text-slate-900">PateFam</strong> xây dựng UniSOS trong khuôn khổ đồ án CSC00004 của Khoa Công nghệ Thông tin, Trường Đại học Khoa học Tự nhiên – ĐHQG-HCM.
+          Trạm cho thuê thiết bị học tập cỡ nhỏ ngay trong trường, dành cho những lúc sinh viên thiếu đúng một món trước giờ học.
         </p>
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+          <p class="font-semibold text-slate-900">Thi không thiếu, điểm không xiêu!</p>
+          <p class="mt-1 text-[13px] text-slate-600">Đồ dùng sẵn tay, tự tin hôm nay!</p>
+          <div class="mt-4 space-y-1.5 border-t border-slate-100 pt-3 text-[12.5px] text-slate-500">
+            <p>UniSOS – Save the test, ace the best!</p>
+            <p>UniSOS – Thi cần gì, có ngay tức thì!</p>
+            <p>UniSOS – Need it? Get it!</p>
+          </div>
+        </div>
       </div>
 
-      <dl class="lg:col-span-6">
+      <dl class="reveal lg:col-span-6" data-reveal data-reveal-delay="80">
+        <div class="flex flex-col gap-1 border-t border-slate-200 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+          <dt class="text-[12.5px] text-slate-500">Nhóm</dt>
+          <dd class="text-[13.5px] font-medium text-slate-900">PateFam</dd>
+        </div>
         <div class="flex flex-col gap-1 border-t border-slate-200 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
           <dt class="text-[12.5px] text-slate-500">Dự án</dt>
-          <dd class="text-[13.5px] font-medium text-slate-900">UniRescue · CSC00004</dd>
+          <dd class="text-[13.5px] font-medium text-slate-900">UniSOS · CSC00004</dd>
         </div>
         <div class="flex flex-col gap-1 border-t border-slate-200 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
           <dt class="text-[12.5px] text-slate-500">Đơn vị</dt>
@@ -547,7 +715,7 @@
   <!-- ============ CONTACT ============ -->
   <section id="contact">
     <div class="mx-auto grid max-w-content gap-12 px-5 py-14 sm:px-8 lg:grid-cols-12 lg:gap-16 lg:py-20">
-      <div class="lg:col-span-5">
+      <div class="reveal lg:col-span-5" data-reveal>
         <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Liên hệ</h2>
         <p class="mt-4 max-w-[42ch] text-[14.5px] leading-relaxed text-slate-600">
           Góp ý về danh mục thiết bị, giá thuê hoặc quy trình nhận trả đều được ghi nhận trong bản demo này.
@@ -569,26 +737,32 @@
             <dd class="mt-1 text-[14px] leading-relaxed text-slate-600">Địa chỉ và email là thông tin minh họa cho đồ án.</dd>
           </div>
         </dl>
+
+        <figure class="frame reveal mt-8 max-w-[360px]" data-reveal data-reveal-delay="120" style="aspect-ratio: 16 / 10;">
+          <img src="https://images.pexels.com/photos/37991788/pexels-photo-37991788.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800"
+               alt="Dãy tủ khoá dọc hành lang khu tự học — Ảnh: Miguel Delima on Pexels"
+               width="800" height="600" loading="lazy" decoding="async">
+        </figure>
       </div>
 
-      <div class="lg:col-span-7">
+      <div class="reveal lg:col-span-7" data-reveal data-reveal-delay="60">
         <form id="feedback-form" class="rounded-2xl border border-slate-200 p-5 sm:p-6" novalidate>
           <p class="text-[13px] font-semibold text-slate-900">Gửi góp ý</p>
           <p class="mt-1 text-[12.5px] leading-relaxed text-slate-500">Không gửi email thật; nội dung chỉ hiển thị thông báo xác nhận trong trình duyệt.</p>
 
           <div class="mt-5 grid gap-4 sm:grid-cols-2">
             <div>
-              <label for="fb-name" class="field-label">Họ tên</label>
+              <label for="fb-name" class="field-label">Họ tên <span class="text-slate-400" aria-hidden="true">*</span></label>
               <input id="fb-name" name="name" type="text" required class="field" placeholder="Nguyễn Minh An" autocomplete="name">
             </div>
             <div>
-              <label for="fb-email" class="field-label">Email</label>
+              <label for="fb-email" class="field-label">Email <span class="text-slate-400" aria-hidden="true">*</span></label>
               <input id="fb-email" name="email" type="email" required class="field" placeholder="ban@example.com" autocomplete="email">
             </div>
           </div>
 
           <div class="mt-4">
-            <label for="fb-message" class="field-label">Nội dung</label>
+            <label for="fb-message" class="field-label">Nội dung <span class="text-slate-400" aria-hidden="true">*</span></label>
             <textarea id="fb-message" name="message" rows="3" required class="field resize-y" placeholder="Thiết bị bạn muốn trạm bổ sung, hoặc góp ý về quy trình…"></textarea>
           </div>
 
@@ -606,11 +780,9 @@
 <footer class="border-t border-slate-200/70 bg-white">
   <div class="mx-auto flex max-w-content flex-col gap-6 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between">
     <div class="flex items-center gap-2.5">
-      <span class="grid h-7 w-7 place-items-center rounded-lg bg-slate-900 text-white">
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>
-      </span>
+      <img src="assets/unisos-logo.png" alt="" aria-hidden="true" class="h-10 w-9 object-contain">
       <p class="text-[12.5px] leading-relaxed text-slate-500">
-        <span class="font-medium text-slate-700">UniRescue</span> — Mô hình thuê thiết bị học tập CSC00004.
+        <span class="font-medium text-slate-700">PateFam · UniSOS</span> — Mô hình thuê thiết bị học tập CSC00004.
       </p>
     </div>
 
@@ -682,10 +854,6 @@
               <dt class="text-slate-500">Giảm giá <span id="discount-code" class="text-slate-400"></span></dt>
               <dd id="total-discount" class="font-medium tabular-nums text-indigo-600">0đ</dd>
             </div>
-            <div class="flex items-baseline justify-between gap-4 border-t border-slate-200/70 pt-2.5">
-              <dt class="text-[13px] font-medium text-slate-900">Tổng dự kiến</dt>
-              <dd id="total-grand" class="text-[15px] font-semibold tabular-nums text-slate-900">0đ</dd>
-            </div>
           </dl>
         </div>
       </section>
@@ -696,7 +864,7 @@
           <div class="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3">
             <svg class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-info"/></svg>
             <p class="text-[12px] leading-relaxed text-slate-600">
-              Bản demo: thông tin bên dưới không được gửi đi hay lưu lại. Không có giao dịch thanh toán thật.
+              Bản demo: thông tin bên dưới chỉ lưu trên trình duyệt của bạn để lần sau không phải nhập lại. Không gửi đi và không có giao dịch thanh toán thật.
             </p>
           </div>
 
@@ -773,6 +941,43 @@
   </div>
 </div>
 
+<!-- ============ LIGHTBOX ============ -->
+<div id="lightbox" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" aria-describedby="lightbox-meta">
+  <div id="lightbox-overlay" class="absolute inset-0 bg-slate-950/85 opacity-0 backdrop-blur-sm"></div>
+
+  <div class="relative flex h-full flex-col">
+    <div class="flex shrink-0 items-start justify-between gap-4 px-5 py-4 sm:px-8">
+      <div class="min-w-0">
+        <h2 id="lightbox-title" class="truncate text-[14px] font-semibold text-white"></h2>
+        <p id="lightbox-meta" class="mt-1 text-[12.5px] tabular-nums text-slate-400"></p>
+      </div>
+      <button type="button" id="lightbox-close"
+              class="-mr-1 shrink-0 rounded-full p-2 text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
+        <span class="sr-only">Đóng ảnh</span>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+
+    <div class="relative flex min-h-0 flex-1 items-center justify-center px-4 sm:px-20">
+      <button type="button" id="lightbox-prev" class="lb-nav absolute left-1 z-10 sm:left-5" aria-label="Ảnh trước">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chevron-left"/></svg>
+      </button>
+
+      <img id="lightbox-img" alt=""
+           class="max-h-full max-w-full rounded-xl object-contain shadow-2xl"
+           decoding="async">
+
+      <button type="button" id="lightbox-next" class="lb-nav absolute right-1 z-10 sm:right-5" aria-label="Ảnh tiếp theo">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+      </button>
+    </div>
+
+    <div class="flex shrink-0 items-center justify-center px-5 pb-5 pt-2">
+      <span id="lightbox-count" class="text-[11.5px] tabular-nums text-slate-400"></span>
+    </div>
+  </div>
+</div>
+
 <!-- ============ TOAST ============ -->
 <div id="toast" class="pointer-events-none fixed bottom-5 left-1/2 z-[60] flex w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 items-center gap-4 rounded-xl bg-slate-900 px-4 py-3 text-white shadow-xl" role="status" aria-live="polite">
   <p id="toast-message" class="min-w-0 flex-1 text-[13px] leading-snug"></p>
@@ -782,6 +987,10 @@
 <script>
 (function () {
   'use strict';
+
+  /* Chạy sớm để nội dung không bao giờ bị kẹt ở trạng thái ẩn
+     nếu phần còn lại của script gặp lỗi. */
+  initScrollReveal();
 
   /* ------------------------------------------------------------------ *
    * Data
@@ -881,6 +1090,16 @@
   ];
 
   var PROMO_CODES = { SV10: 10 };
+  var STORAGE_KEY = 'unirescue.cart.v1';
+  var DRAFT_KEY = 'unirescue.checkout.v1';
+  var ALLOWED_DAYS = [1, 3, 7];
+  var DRAFT_FIELDS = [
+    { id: 'cust-student-id', max: 20 },
+    { id: 'cust-name', max: 80 },
+    { id: 'cust-phone', max: 20 },
+    { id: 'cust-location', max: 80 },
+    { id: 'cust-payment', max: 60 }
+  ];
 
   /* ------------------------------------------------------------------ *
    * State
@@ -892,6 +1111,8 @@
   var step = 'items';
   var lastFocused = null;
   var hasReceipt = false;
+  var lastBadgeCount = 0;
+  var gridAnimated = false;
 
   /* ------------------------------------------------------------------ *
    * Helpers
@@ -929,6 +1150,208 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * Persistence (localStorage)
+   * ------------------------------------------------------------------ */
+  function saveState() {
+    try {
+      var items = {};
+      Object.keys(cart).forEach(function (id) {
+        if (cart[id] > 0) items[id] = cart[id];
+      });
+
+      if (!Object.keys(items).length && !promo) {
+        window.localStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        items: items,
+        days: days,
+        promo: promo ? promo.code : null
+      }));
+    } catch (err) {
+      /* storage disabled or full — the cart still works for this session */
+    }
+  }
+
+  function restoreState() {
+    var raw;
+    try {
+      raw = window.localStorage.getItem(STORAGE_KEY);
+    } catch (err) {
+      return false;
+    }
+    if (!raw) return false;
+
+    var data;
+    try {
+      data = JSON.parse(raw);
+    } catch (err) {
+      return false;
+    }
+
+    var restored = {};
+    var saved = (data && typeof data.items === 'object' && data.items) ? data.items : {};
+
+    Object.keys(saved).forEach(function (id) {
+      var qty = parseInt(saved[id], 10);
+      if (productById(id) && qty > 0) restored[id] = Math.min(qty, 20);
+    });
+
+    if (!Object.keys(restored).length) return false;
+
+    cart = restored;
+
+    var savedDays = Number(data.days);
+    if (ALLOWED_DAYS.indexOf(savedDays) !== -1) {
+      days = savedDays;
+      $('#rental-days').value = String(days);
+    }
+
+    if (data.promo && PROMO_CODES[data.promo]) {
+      promo = { code: data.promo, percent: PROMO_CODES[data.promo] };
+      $('#promo-msg').textContent = 'Đã áp dụng ' + promo.code + ' — giảm ' + promo.percent + '% tiền thuê.';
+      $('#promo-msg').style.color = '#4338ca';
+    }
+
+    return true;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Checkout draft (localStorage) — thiết bị này chỉ lưu trên máy người dùng
+   * ------------------------------------------------------------------ */
+  var draftTimer = null;
+
+  function saveDraft() {
+    try {
+      var draft = {};
+
+      DRAFT_FIELDS.forEach(function (field) {
+        var el = document.getElementById(field.id);
+        if (!el) return;
+        var value = String(el.value || '').trim().slice(0, field.max);
+        if (el.tagName === 'SELECT' && !value) return;
+        if (value) draft[field.id] = value;
+      });
+
+      if (!Object.keys(draft).length) {
+        window.localStorage.removeItem(DRAFT_KEY);
+        return;
+      }
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch (err) {
+      /* storage disabled — the form still works normally */
+    }
+  }
+
+  function queueSaveDraft() {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(saveDraft, 400);
+  }
+
+  function restoreDraft() {
+    var raw;
+    try {
+      raw = window.localStorage.getItem(DRAFT_KEY);
+    } catch (err) {
+      return false;
+    }
+    if (!raw) return false;
+
+    var draft;
+    try {
+      draft = JSON.parse(raw);
+    } catch (err) {
+      return false;
+    }
+    if (!draft || typeof draft !== 'object') return false;
+
+    var applied = false;
+
+    DRAFT_FIELDS.forEach(function (field) {
+      var el = document.getElementById(field.id);
+      if (!el || typeof draft[field.id] !== 'string') return;
+
+      if (el.tagName === 'SELECT') {
+        var exists = Array.prototype.some.call(el.options, function (option) {
+          return option.value === draft[field.id];
+        });
+        if (!exists) return;
+      }
+
+      el.value = draft[field.id].slice(0, field.max);
+      applied = true;
+    });
+
+    return applied;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Reveal on scroll
+   * ------------------------------------------------------------------ */
+  /* Không gán lại giá trị ở đây: observer được tạo sớm ở đầu script,
+     một initializer giá trị null sẽ xoá mất tham chiếu đó. */
+  var revealObserver;
+
+  function revealAll(root) {
+    $$('[data-reveal]:not(.is-in)', root).forEach(function (el) {
+      el.classList.add('is-in');
+    });
+  }
+
+  function observeReveals(root) {
+    var items = $$('[data-reveal]:not(.is-in)', root || document);
+    if (!revealObserver) {
+      revealAll(root);
+      return;
+    }
+    items.forEach(function (el) { revealObserver.observe(el); });
+  }
+
+  function initScrollReveal() {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!('IntersectionObserver' in window) || reduce) {
+      revealAll(document);
+      return;
+    }
+
+    if (revealObserver) {
+      observeReveals(document);
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      var order = 0;
+
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+
+        var el = entry.target;
+        var own = el.getAttribute('data-reveal-delay');
+        var delay = own !== null ? Number(own) || 0 : Math.min(order * 60, 300);
+        order += 1;
+
+        observer.unobserve(el);
+        setTimeout(function () { el.classList.add('is-in'); }, delay);
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.12 });
+
+    revealObserver = observer;
+    observeReveals(document);
+
+    /* Lưới an toàn: nếu observer không chạy vì bất kỳ lý do gì,
+       phần nội dung đang nằm trong khung nhìn vẫn được hiện. */
+    window.setTimeout(function () {
+      $$('[data-reveal]:not(.is-in)').forEach(function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight) {
+          el.classList.add('is-in');
+        }
+      });
+    }, 1400);
+  }
+
+  /* ------------------------------------------------------------------ *
    * Product grid
    * ------------------------------------------------------------------ */
   function matches(product, query) {
@@ -939,16 +1362,18 @@
   }
 
   function cardHTML(product) {
+    var revealAttr = gridAnimated ? '' : ' data-reveal';
     return '' +
-      '<article class="card" id="product-' + product.id + '" data-id="' + product.id + '">' +
-        '<div class="card-media aspect-[4/3]">' +
+      '<article class="card" id="product-' + product.id + '" data-id="' + product.id + '"' + revealAttr + '>' +
+        '<button type="button" class="card-media aspect-[4/3]" data-zoom="' + product.id + '" aria-label="Xem ảnh lớn: ' + product.name + '">' +
           '<img src="' + product.image + '" alt="' + product.alt + '" width="600" height="450" loading="lazy" decoding="async" onerror="this.style.visibility=\'hidden\'">' +
           '<span class="card-badge">' + product.catLabel + '</span>' +
-        '</div>' +
+          '<span class="zoom-hint" aria-hidden="true"><svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-expand"/></svg></span>' +
+        '</button>' +
         '<div class="flex flex-1 flex-col p-4">' +
           '<h3 class="text-[15px] font-semibold leading-snug text-slate-900">' + product.name + '</h3>' +
-          '<p class="mt-1.5 clamp-2 text-[12.5px] leading-relaxed text-slate-500">' + product.detail + '</p>' +
-          '<div class="mt-4 flex items-end justify-between gap-3 border-t border-slate-200/70 pt-3">' +
+          '<p class="mt-1.5 mb-4 clamp-2 text-[12.5px] leading-relaxed text-slate-500">' + product.detail + '</p>' +
+          '<div class="mt-auto flex items-end justify-between gap-3 border-t border-slate-200/70 pt-3">' +
             '<p class="leading-tight">' +
               '<span class="text-[15px] font-semibold tabular-nums text-slate-900">' + formatVND(product.price) + '</span>' +
               '<span class="ml-0.5 text-[12px] text-slate-400">' + product.unit + '</span>' +
@@ -967,9 +1392,12 @@
     var list = PRODUCTS.filter(function (p) { return matches(p, query); });
 
     $('#product-grid').innerHTML = list.map(cardHTML).join('');
+    gridAnimated = true;
     $('#empty-state').classList.toggle('hidden', list.length > 0);
     $('#result-count').textContent = list.length + ' thiết bị' +
       (list.length === PRODUCTS.length ? ' đang cho thuê' : ' khớp bộ lọc');
+
+    observeReveals($('#product-grid'));
   }
 
   function renderFilters() {
@@ -1000,7 +1428,7 @@
       : formatVND(product.price) + ' × ' + qty + ' ' + product.unit.replace('/', '').trim();
 
     return '' +
-      '<div class="flex gap-3 border-b border-slate-200/70 py-4 first:pt-0">' +
+      '<div class="cart-row flex gap-3 border-b border-slate-200/70 py-4 first:pt-0">' +
         '<img src="' + product.image + '" alt="" width="56" height="56" loading="lazy" decoding="async" class="h-14 w-14 shrink-0 rounded-lg border border-slate-200/70 object-cover">' +
         '<div class="min-w-0 flex-1">' +
           '<div class="flex items-start justify-between gap-2">' +
@@ -1038,6 +1466,16 @@
     $('#cart-badge-sr').textContent = count + ' thiết bị trong giỏ';
     $('#cart-count-label').textContent = count + ' món';
 
+    if (count !== lastBadgeCount) {
+      lastBadgeCount = count;
+      if (count > 0) {
+        var badge = $('#cart-badge');
+        badge.classList.remove('badge-pop');
+        void badge.offsetWidth;
+        badge.classList.add('badge-pop');
+      }
+    }
+
     $('#cart-items').innerHTML = ids.map(function (id) {
       return cartRowHTML(productById(id), cart[id]);
     }).join('');
@@ -1050,10 +1488,10 @@
     $('#total-discount').textContent = '−' + formatVND(sum.discount);
     $('#total-discount-row').classList.toggle('hidden', !promo);
     $('#discount-code').textContent = promo ? '(' + promo.code + ')' : '';
-    $('#total-grand').textContent = formatVND(sum.grand);
     $('#footer-total').textContent = formatVND(sum.grand);
 
     applyPaymentLabels(isEmpty);
+    saveState();
   }
 
   function applyPaymentLabels(isEmpty) {
@@ -1165,8 +1603,18 @@
     var footer = $('#cart-footer');
     footer.classList.toggle('hidden', next === 'success');
 
+    $('#cart-count-label').classList.toggle('hidden', next === 'success');
+
     $('#back-to-items').classList.toggle('hidden', next !== 'checkout');
     $('#cart-body').scrollTop = 0;
+
+    var panel = next === 'checkout' ? $('#cart-step-checkout')
+      : next === 'success' ? $('#cart-step-success')
+      : $('#cart-step-items');
+
+    panel.classList.remove('step-in');
+    void panel.offsetWidth;
+    panel.classList.add('step-in');
 
     applyPaymentLabels(cartCount() === 0);
   }
@@ -1175,6 +1623,109 @@
     if (cartCount() === 0) return;
     setStep('checkout');
     setTimeout(function () { $('#cust-student-id').focus(); }, 80);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Image lightbox
+   * ------------------------------------------------------------------ */
+  var lightboxIds = [];
+  var lightboxIndex = 0;
+  var lightboxTrigger = null;
+
+  function renderLightbox() {
+    var product = productById(lightboxIds[lightboxIndex]);
+    if (!product) return;
+
+    var img = $('#lightbox-img');
+    img.onerror = function () { img.style.opacity = ''; };
+    img.src = product.image;
+    img.alt = product.alt;
+
+    $('#lightbox-title').textContent = product.name;
+    $('#lightbox-meta').textContent =
+      product.catLabel + ' · ' + formatVND(product.price) + ' ' + product.unit;
+    $('#lightbox-count').textContent = lightboxIds.length > 1
+      ? (lightboxIndex + 1) + ' / ' + lightboxIds.length
+      : '';
+
+    var multiple = lightboxIds.length > 1;
+    $('#lightbox-prev').disabled = !multiple;
+    $('#lightbox-next').disabled = !multiple;
+  }
+
+  function openLightbox(id, trigger) {
+    var ids = $$('#product-grid [data-zoom]').map(function (el) {
+      return el.getAttribute('data-zoom');
+    });
+    var index = ids.indexOf(String(id));
+    if (index === -1) return;
+
+    lightboxIds = ids;
+    lightboxIndex = index;
+    lightboxTrigger = trigger || null;
+
+    renderLightbox();
+
+    var box = $('#lightbox');
+    box.classList.remove('hidden');
+    lockScroll(true);
+    requestAnimationFrame(function () { box.classList.add('is-open'); });
+
+    setTimeout(function () { $('#lightbox-close').focus(); }, 50);
+  }
+
+  function closeLightbox() {
+    var box = $('#lightbox');
+    if (box.classList.contains('hidden')) return;
+
+    var trigger = lightboxTrigger;
+
+    box.classList.remove('is-open');
+    setTimeout(function () {
+      box.classList.add('hidden');
+      if (trigger && trigger.focus) trigger.focus();
+    }, 220);
+
+    if ($('#cart-root').classList.contains('hidden')) lockScroll(false);
+    lightboxTrigger = null;
+  }
+
+  function stepLightbox(delta) {
+    if (lightboxIds.length < 2) return;
+
+    lightboxIndex = (lightboxIndex + delta + lightboxIds.length) % lightboxIds.length;
+
+    var img = $('#lightbox-img');
+    img.style.opacity = '0';
+    renderLightbox();
+
+    if (img.complete) {
+      img.style.opacity = '';
+    } else {
+      img.addEventListener('load', function onLoad() {
+        img.removeEventListener('load', onLoad);
+        img.style.opacity = '';
+      });
+    }
+  }
+
+  function trapFocus(scope, event) {
+    var focusables = Array.prototype.filter.call(
+      scope.querySelectorAll('button, [href], input, select, textarea'),
+      function (el) { return !el.disabled && el.offsetParent !== null; }
+    );
+    if (!focusables.length) return;
+
+    var first = focusables[0];
+    var last = focusables[focusables.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   /* ------------------------------------------------------------------ *
@@ -1236,12 +1787,12 @@
       '</div>' +
       '<ul class="border-b border-slate-200/70 px-4 py-3 text-[12.5px]">' + rows + '</ul>' +
       '<dl class="space-y-1.5 px-4 py-3 text-[12.5px]">' +
-        '<div class="flex items-baseline justify-between gap-3">' +
-          '<dt class="text-slate-500">Tiền thuê</dt>' +
-          '<dd class="font-medium tabular-nums text-slate-900">' + formatVND(snapshot.totals.rent) + '</dd>' +
-        '</div>' +
         (snapshot.promo
           ? '<div class="flex items-baseline justify-between gap-3">' +
+              '<dt class="text-slate-500">Tiền thuê</dt>' +
+              '<dd class="font-medium tabular-nums text-slate-900">' + formatVND(snapshot.totals.rent) + '</dd>' +
+            '</div>' +
+            '<div class="flex items-baseline justify-between gap-3">' +
               '<dt class="text-slate-500">Giảm giá (' + snapshot.promo.code + ')</dt>' +
               '<dd class="font-medium tabular-nums text-indigo-600">−' + formatVND(snapshot.totals.discount) + '</dd>' +
             '</div>'
@@ -1255,6 +1806,7 @@
     setStep('success');
     hasReceipt = true;
     cart = {};
+    promo = null;
     renderCart();
     setTimeout(function () { $('#cart-step-success').scrollIntoView({ block: 'center' }); }, 60);
   }
@@ -1267,9 +1819,11 @@
     $('#promo-input').value = '';
     $('#promo-msg').textContent = 'Mã demo: SV10 — giảm 10% tiền thuê.';
     $('#promo-msg').style.color = '';
-    $('#checkout-form').reset();
-    $('#cust-name').value = 'Sinh viên Demo';
-    $('#cust-phone').value = '0900000111';
+
+    /* Giữ nguyên thông tin người thuê đã nhập — chỉ bỏ tick thoả thuận. */
+    var agreement = $('#rental-agreement');
+    if (agreement) agreement.checked = false;
+
     renderCart();
     setStep('items');
     hasReceipt = false;
@@ -1315,6 +1869,9 @@
    * Events
    * ------------------------------------------------------------------ */
   document.addEventListener('click', function (event) {
+    var zoomBtn = event.target.closest('[data-zoom]');
+    if (zoomBtn) { openLightbox(zoomBtn.getAttribute('data-zoom'), zoomBtn); return; }
+
     var addBtn = event.target.closest('[data-add]');
     if (addBtn) { addToCart(addBtn.getAttribute('data-add')); return; }
 
@@ -1362,6 +1919,11 @@
   $('#cart-close').addEventListener('click', closeCart);
   $('#cart-overlay').addEventListener('click', closeCart);
 
+  $('#lightbox-close').addEventListener('click', closeLightbox);
+  $('#lightbox-overlay').addEventListener('click', closeLightbox);
+  $('#lightbox-prev').addEventListener('click', function () { stepLightbox(-1); });
+  $('#lightbox-next').addEventListener('click', function () { stepLightbox(1); });
+
   $('#cart-empty-action').addEventListener('click', function () {
     closeCart();
     setTimeout(function () {
@@ -1391,6 +1953,9 @@
     placeOrder();
   });
 
+  $('#checkout-form').addEventListener('input', queueSaveDraft);
+  $('#checkout-form').addEventListener('change', saveDraft);
+
   var successReset = document.createElement('button');
   successReset.type = 'button';
   successReset.className = 'btn btn-secondary mt-6 w-full';
@@ -1419,29 +1984,25 @@
   });
 
   document.addEventListener('keydown', function (event) {
-    if ($('#cart-root').classList.contains('hidden')) return;
+    var lightbox = $('#lightbox');
+    var cart = $('#cart-root');
+
+    if (!lightbox.classList.contains('hidden')) {
+      if (event.key === 'Escape') { closeLightbox(); return; }
+      if (event.key === 'ArrowLeft') { stepLightbox(-1); return; }
+      if (event.key === 'ArrowRight') { stepLightbox(1); return; }
+      if (event.key === 'Tab') trapFocus(lightbox, event);
+      return;
+    }
+
+    if (cart.classList.contains('hidden')) return;
 
     if (event.key === 'Escape') {
       closeCart();
       return;
     }
 
-    if (event.key === 'Tab') {
-      const focusables = Array.prototype.filter.call(
-        document.querySelectorAll('#cart-panel button, #cart-panel input, #cart-panel select, #cart-panel textarea, #cart-panel a[href]'),
-        function (el) { return !el.disabled && el.offsetParent !== null; }
-      );
-      if (!focusables.length) return;
-      var first = focusables[0];
-      var last = focusables[focusables.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
+    if (event.key === 'Tab') trapFocus($('#cart-panel'), event);
   });
 
   var header = $('#site-header');
@@ -1453,10 +2014,18 @@
   /* ------------------------------------------------------------------ *
    * Init
    * ------------------------------------------------------------------ */
+  restoreDraft();
+
+  var restoredCart = restoreState();
+
   renderFilters();
   renderProducts();
   renderCart();
   setStep('items');
+
+  if (restoredCart) {
+    showToast('Đã khôi phục giỏ thuê: ' + cartCount() + ' món.', 'Mở giỏ', openCart);
+  }
 })();
 </script>
 </body>
