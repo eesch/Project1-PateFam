@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="UniRescue - thuê máy tính, sạc laptop, bút trình chiếu và phụ kiện học tập ngay trong trường. Mô hình demo CSC00004.">
+<meta name="theme-color" content="#ffffff">
+<title>UniRescue — Thuê thiết bị học tập ngay trong trường</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+        maxWidth: { content: '1200px' },
+        boxShadow: {
+          hair: '0 1px 2px rgba(15, 23, 42, .05)',
+          lift: '0 18px 40px -26px rgba(15, 23, 42, .45)'
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  :root {
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --line-soft: #eef2f6;
+    --surface: #f8fafc;
+    --accent: #4f46e5;
+    --accent-dark: #4338ca;
+    --accent-soft: #eef2ff;
+    --radius-control: 10px;
+  }
+
+  * { -webkit-tap-highlight-color: transparent; }
+
+  button, [role="button"] { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: #fff;
+    color: var(--ink-2);
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  h1, h2, h3 { font-weight: 600; color: var(--ink); }
+
+  section[id] { scroll-margin-top: 84px; }
+
+  :focus-visible { outline: none; }
+
+  /* ---------- Controls ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: var(--radius-control);
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color .16s ease, border-color .16s ease, color .16s ease,
+                box-shadow .16s ease, transform .16s ease;
+  }
+  .btn:focus-visible { box-shadow: 0 0 0 3px rgba(79, 70, 229, .32); }
+
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 1px 2px rgba(15, 23, 42, .12); }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:active { transform: translateY(1px); }
+
+  .btn-secondary { background: #fff; border-color: var(--line); color: var(--ink-2); }
+  .btn-secondary:hover { border-color: #cbd5e1; background: var(--surface); }
+
+  .btn-ghost { background: transparent; color: #475569; }
+  .btn-ghost:hover { background: #f1f5f9; color: var(--ink); }
+
+  .btn-sm { padding: 9px 13px; font-size: 13px; }
+
+  .btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #475569;
+    transition: background-color .15s ease, color .15s ease;
+  }
+  .nav-link:hover { background: var(--surface); color: var(--ink); }
+
+  .field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    background: #fff;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.45;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .field::placeholder { color: #94a3b8; }
+  .field-icon { padding-left: 36px; }
+  .field:focus { border-color: #a5b4fc; box-shadow: 0 0 0 3px rgba(79, 70, 229, .14); }
+
+  select.field {
+    appearance: none;
+    padding-right: 34px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .hint { margin-top: 6px; font-size: 12px; line-height: 1.5; color: var(--muted); }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: #475569;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+  }
+  .chip:hover { border-color: #cbd5e1; color: var(--ink); }
+  .chip[aria-pressed="true"] {
+    border-color: #c7d2fe;
+    background: var(--accent-soft);
+    color: #3730a3;
+  }
+  .chip-count { font-size: 11.5px; font-weight: 500; color: #94a3b8; }
+  .chip[aria-pressed="true"] .chip-count { color: #6366f1; }
+
+  /* ---------- Product card ---------- */
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: #dbe3ec; box-shadow: var(--shadow-lift, 0 18px 40px -26px rgba(15,23,42,.45)); }
+  .card.is-highlight { border-color: #c7d2fe; box-shadow: 0 0 0 2px var(--accent-soft), 0 18px 40px -26px rgba(15, 23, 42, .45); }
+  .card-media { position: relative; background: var(--surface); }
+  .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 5px 9px;
+    border: 1px solid rgba(226, 232, 240, .9);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(6px);
+    color: #475569;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .01em;
+  }
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #fff;
+    color: var(--ink-2);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .card-cta:hover { border-color: #a5b4fc; background: var(--accent-soft); color: var(--accent-dark); }
+  .card-cta:focus-visible { box-shadow: 0 0 0 3px rgba(79, 70, 229, .28); }
+
+  /* ---------- Scrollbars ---------- */
+  .thin-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+  .thin-scroll::-webkit-scrollbar { width: 8px; }
+  .thin-scroll::-webkit-scrollbar-thumb { background: #dbe3ec; border-radius: 999px; }
+  .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+
+  /* ---------- Drawer ---------- */
+  #cart-overlay { transition: opacity .22s ease; }
+  #cart-panel { transition: transform .28s cubic-bezier(.32, .72, 0, 1); }
+  #cart-root.is-open #cart-overlay { opacity: 1; }
+  #cart-root.is-open #cart-panel { transform: translateX(0); }
+
+  /* ---------- Toast ---------- */
+  #toast {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  #toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- Small helpers ---------- */
+  .clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .jump { transition: color .15s ease; }
+  .jump:hover .jump-name { color: var(--accent-dark); }
+  .jump:hover .jump-arrow { transform: translateX(2px); color: var(--accent); }
+  .jump-arrow { transition: transform .15s ease, color .15s ease; }
+  .jump:focus-visible { box-shadow: 0 0 0 3px rgba(79, 70, 229, .22); border-radius: 8px; }
+
+  /* Inputs at 16px on small screens so iOS does not zoom on focus */
+  @media (max-width: 640px) {
+    .field { font-size: 16px; }
+    .field-label { font-size: 13px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      transition-duration: .01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+
+<body class="font-sans antialiased">
+
+<!-- ============ ICON SPRITE (Lucide) ============ -->
+<svg xmlns="http://www.w3.org/2000/svg" class="hidden" aria-hidden="true" focusable="false">
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 11.5 2 2 4-4"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+  <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+</svg>
+
+<!-- ============ DEMO BAR ============ -->
+<div class="border-b border-slate-200/70 bg-slate-50">
+  <p class="mx-auto max-w-content px-5 py-2 text-center text-[11.5px] leading-relaxed text-slate-500 sm:px-8">
+    <span class="font-semibold text-slate-600">Mô hình demo CSC00004</span>
+    <span class="mx-1.5 text-slate-300">/</span>
+    Không xử lý thanh toán, không lưu dữ liệu thật.
+  </p>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header id="site-header" class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md transition-shadow duration-200">
+  <div class="mx-auto flex h-16 max-w-content items-center justify-between gap-4 px-5 sm:px-8">
+
+    <a href="#top" class="flex items-center gap-2.5">
+      <span class="grid h-8 w-8 place-items-center rounded-[9px] bg-indigo-600 text-white">
+        <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>
+      </span>
+      <span class="text-[17px] font-semibold tracking-[-0.02em] text-slate-900">UniRescue</span>
+    </a>
+
+    <nav class="hidden items-center gap-0.5 md:flex" aria-label="Điều hướng chính">
+      <a class="nav-link" href="#products">Thiết bị</a>
+      <a class="nav-link" href="#workflow">Cách mượn</a>
+      <a class="nav-link" href="#about">Về nhóm</a>
+      <a class="nav-link" href="#contact">Liên hệ</a>
+    </nav>
+
+    <div class="flex items-center gap-1.5">
+      <button type="button" id="cart-open" aria-haspopup="dialog" aria-controls="cart-root"
+              class="inline-flex items-center gap-2 rounded-[10px] border border-slate-200 px-2.5 py-2 text-[13px] font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+        <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-bag"/></svg>
+        <span class="hidden sm:inline">Giỏ thuê</span>
+        <span id="cart-badge" class="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[11px] font-semibold leading-none text-white">0</span>
+        <span class="sr-only" id="cart-badge-sr">0 thiết bị trong giỏ</span>
+      </button>
+
+      <button type="button" id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu"
+              class="-mr-1 rounded-[10px] p-2 text-slate-600 transition-colors hover:bg-slate-100 md:hidden">
+        <span class="sr-only">Mở menu</span>
+        <svg class="h-[20px] w-[20px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden border-t border-slate-200/70 bg-white px-5 pb-4 pt-2 md:hidden">
+    <nav aria-label="Điều hướng di động" class="grid gap-0.5 text-[14px] font-medium text-slate-700">
+      <a href="#products" class="rounded-lg px-3 py-2.5 hover:bg-slate-50">Thiết bị</a>
+      <a href="#workflow" class="rounded-lg px-3 py-2.5 hover:bg-slate-50">Cách mượn</a>
+      <a href="#about" class="rounded-lg px-3 py-2.5 hover:bg-slate-50">Về nhóm</a>
+      <a href="#contact" class="rounded-lg px-3 py-2.5 hover:bg-slate-50">Liên hệ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="border-b border-slate-200/70">
+    <div class="mx-auto grid max-w-content gap-12 px-5 pb-16 pt-12 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-20 lg:pt-20">
+
+      <div class="lg:col-span-7">
+        <h1 class="max-w-[19ch] text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] text-slate-900 sm:text-[46px] lg:text-[56px]">
+          Mượn nhanh thiết bị học tập, ngay trong trường.
+        </h1>
+
+        <p class="mt-5 max-w-[52ch] text-[15px] leading-[1.65] text-slate-600 sm:text-[16.5px]">
+          Máy tính, sạc laptop, bút trình chiếu và phụ kiện nhỏ có sẵn để thuê theo ngày.
+          Không phải rời trường, không phải mua món chỉ dùng một lần.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <a href="#products" class="btn btn-primary">
+            Khám phá dịch vụ
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          </a>
+          <p class="text-[13px] text-slate-500">Áp dụng mã sinh viên ngay trong giỏ thuê.</p>
+        </div>
+
+        <dl class="mt-12 grid max-w-xl grid-cols-3 gap-px border-y border-slate-200/70 bg-slate-200/70">
+          <div class="bg-white py-4 pr-4">
+            <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">Thiết bị</dt>
+            <dd class="mt-1.5 text-[15px] font-medium text-slate-900">7 món</dd>
+          </div>
+          <div class="bg-white px-4 py-4">
+            <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">Giá thuê</dt>
+            <dd class="mt-1.5 text-[15px] font-medium text-slate-900">từ 8.000đ</dd>
+          </div>
+          <div class="bg-white pl-4 py-4">
+            <dt class="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">Điểm nhận</dt>
+            <dd class="mt-1.5 text-[15px] font-medium text-slate-900">Sảnh tòa nhà I</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="lg:col-span-5 lg:border-l lg:border-slate-200/70 lg:pl-10">
+        <div class="flex items-baseline justify-between gap-3">
+          <h2 class="text-[13px] font-semibold text-slate-900">Thiếu gì, mượn đó</h2>
+          <span class="text-[12px] text-slate-400">Giá theo ngày</span>
+        </div>
+
+        <ul class="mt-3 divide-y divide-slate-200/70 border-y border-slate-200/70">
+          <li>
+            <button type="button" class="jump flex w-full items-center justify-between gap-4 py-3.5 text-left" data-target="2">
+              <span class="text-[12.5px] text-slate-500">Quên máy tính đi thi</span>
+              <span class="flex items-center gap-2">
+                <span class="text-right">
+                  <span class="jump-name block text-[13px] font-medium text-slate-900">Casio fx-880BTG</span>
+                  <span class="block text-[12px] text-slate-400">15.000đ</span>
+                </span>
+                <svg class="jump-arrow h-4 w-4 shrink-0 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="jump flex w-full items-center justify-between gap-4 py-3.5 text-left" data-target="3">
+              <span class="text-[12.5px] text-slate-500">Laptop sắp cạn pin</span>
+              <span class="flex items-center gap-2">
+                <span class="text-right">
+                  <span class="jump-name block text-[13px] font-medium text-slate-900">Sạc USB-C 65W</span>
+                  <span class="block text-[12px] text-slate-400">22.000đ</span>
+                </span>
+                <svg class="jump-arrow h-4 w-4 shrink-0 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="jump flex w-full items-center justify-between gap-4 py-3.5 text-left" data-target="4">
+              <span class="text-[12.5px] text-slate-500">Sắp tới lượt thuyết trình</span>
+              <span class="flex items-center gap-2">
+                <span class="text-right">
+                  <span class="jump-name block text-[13px] font-medium text-slate-900">Bút trình chiếu</span>
+                  <span class="block text-[12px] text-slate-400">18.000đ</span>
+                </span>
+                <svg class="jump-arrow h-4 w-4 shrink-0 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="jump flex w-full items-center justify-between gap-4 py-3.5 text-left" data-target="5">
+              <span class="text-[12.5px] text-slate-500">Hết pin điều khiển</span>
+              <span class="flex items-center gap-2">
+                <span class="text-right">
+                  <span class="jump-name block text-[13px] font-medium text-slate-900">Pin AA / AAA</span>
+                  <span class="block text-[12px] text-slate-400">8.000đ</span>
+                </span>
+                <svg class="jump-arrow h-4 w-4 shrink-0 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              </span>
+            </button>
+          </li>
+        </ul>
+
+        <p class="mt-4 text-[12px] leading-relaxed text-slate-400">
+          Chọn tình huống để xem đúng thiết bị trong danh mục.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CATALOGUE ============ -->
+  <section id="products" class="border-b border-slate-200/70">
+    <div class="mx-auto max-w-content px-5 py-14 sm:px-8 lg:py-20">
+
+      <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
+        <div>
+          <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Thiết bị cho thuê</h2>
+          <p id="result-count" class="mt-2 text-[13.5px] text-slate-500" aria-live="polite">Đang tải…</p>
+        </div>
+
+        <div class="w-full sm:w-[290px]">
+          <label for="search-input" class="field-label">Tìm thiết bị</label>
+          <div class="relative">
+            <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-search"/></svg>
+            <input id="search-input" type="search" class="field field-icon" placeholder="Casio, sạc 65W, HDMI…" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div id="filters" class="mt-7 flex flex-wrap gap-2" role="group" aria-label="Lọc theo danh mục"></div>
+
+      <div id="product-grid" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+
+      <div id="empty-state" class="mt-8 hidden rounded-2xl border border-dashed border-slate-300 px-6 py-14 text-center">
+        <p class="text-[15px] font-medium text-slate-900">Không tìm thấy thiết bị phù hợp</p>
+        <p class="mt-1.5 text-[13.5px] text-slate-500">Thử từ khóa khác, hoặc xóa bộ lọc đang chọn.</p>
+        <button type="button" id="reset-filters" class="btn btn-secondary btn-sm mt-5">Xóa bộ lọc</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section id="workflow">
+    <div class="mx-auto max-w-content px-5 py-14 sm:px-8 lg:py-20">
+      <div class="max-w-[62ch]">
+        <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Cách mượn</h2>
+        <p class="mt-2.5 text-[14.5px] leading-relaxed text-slate-500">
+          Ba bước để có yêu cầu thuê. Bản demo dừng lại ở bước gửi yêu cầu; khâu nhận và hoàn trả thiết bị chưa được triển khai.
+        </p>
+      </div>
+
+      <ol class="mt-10 grid gap-8 border-t border-slate-200/70 pt-8 sm:grid-cols-3 sm:gap-0">
+        <li class="sm:pr-10">
+          <p class="text-[12px] font-medium tabular-nums text-slate-300">01</p>
+          <h3 class="mt-2 text-[15px] font-semibold text-slate-900">Chọn thiết bị và thời hạn</h3>
+          <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">
+            Lọc theo danh mục, xem giá thuê và phụ kiện đi kèm của từng món.
+          </p>
+        </li>
+        <li class="sm:border-l sm:border-slate-200/70 sm:px-10">
+          <p class="text-[12px] font-medium tabular-nums text-slate-300">02</p>
+          <h3 class="mt-2 text-[15px] font-semibold text-slate-900">Điền thông tin nhận</h3>
+          <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">
+            Mã số sinh viên, điểm hẹn và phương thức thanh toán mô phỏng.
+          </p>
+        </li>
+        <li class="sm:border-l sm:border-slate-200/70 sm:pl-10">
+          <p class="text-[12px] font-medium tabular-nums text-slate-300">03</p>
+          <h3 class="mt-2 text-[15px] font-semibold text-slate-900">Nhận tại điểm hẹn</h3>
+          <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">
+            Đối chiếu thiết bị khi nhận và trả lại đúng thời hạn đã đăng ký.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about" class="border-y border-slate-200/70 bg-slate-50/80">
+    <div class="mx-auto grid max-w-content gap-10 px-5 py-14 sm:px-8 lg:grid-cols-12 lg:gap-16 lg:py-20">
+      <div class="lg:col-span-6">
+        <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Về nhóm</h2>
+        <p class="mt-4 max-w-[52ch] text-[14.5px] leading-[1.7] text-slate-600">
+          UniRescue là đồ án môn học CSC00004 của Khoa Công nghệ Thông tin, Trường Đại học Khoa học Tự nhiên – ĐHQG-HCM.
+          Nhóm xây dựng mô hình cho thuê thiết bị học tập cỡ nhỏ đặt trong trường, dành cho những lúc sinh viên thiếu đúng một món trước giờ học.
+        </p>
+      </div>
+
+      <dl class="lg:col-span-6">
+        <div class="flex flex-col gap-1 border-t border-slate-200 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+          <dt class="text-[12.5px] text-slate-500">Dự án</dt>
+          <dd class="text-[13.5px] font-medium text-slate-900">UniRescue · CSC00004</dd>
+        </div>
+        <div class="flex flex-col gap-1 border-t border-slate-200 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+          <dt class="text-[12.5px] text-slate-500">Đơn vị</dt>
+          <dd class="text-[13.5px] font-medium text-slate-900 sm:text-right">Khoa CNTT, Trường ĐH Khoa học Tự nhiên – ĐHQG-HCM</dd>
+        </div>
+        <div class="flex flex-col gap-1 border-t border-slate-200 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+          <dt class="text-[12.5px] text-slate-500">Điểm nhận (mô phỏng)</dt>
+          <dd class="text-[13.5px] font-medium text-slate-900">Sảnh tòa nhà I</dd>
+        </div>
+        <div class="flex flex-col gap-1 border-y border-slate-200 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+          <dt class="text-[12.5px] text-slate-500">Email</dt>
+          <dd class="text-[13.5px] font-medium text-slate-900">hotro@unirescue-demo.edu.vn</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact">
+    <div class="mx-auto grid max-w-content gap-12 px-5 py-14 sm:px-8 lg:grid-cols-12 lg:gap-16 lg:py-20">
+      <div class="lg:col-span-5">
+        <h2 class="text-[24px] font-semibold tracking-[-0.025em] text-slate-900 sm:text-[28px]">Liên hệ</h2>
+        <p class="mt-4 max-w-[42ch] text-[14.5px] leading-relaxed text-slate-600">
+          Góp ý về danh mục thiết bị, giá thuê hoặc quy trình nhận trả đều được ghi nhận trong bản demo này.
+        </p>
+
+        <dl class="mt-8 space-y-5">
+          <div>
+            <dt class="text-[12px] font-medium uppercase tracking-[0.08em] text-slate-400">Email</dt>
+            <dd class="mt-1 text-[14px] text-slate-900">
+              <a href="mailto:hotro@unirescue-demo.edu.vn" class="underline decoration-slate-300 underline-offset-4 transition-colors hover:decoration-slate-500">hotro@unirescue-demo.edu.vn</a>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-[12px] font-medium uppercase tracking-[0.08em] text-slate-400">Điểm nhận</dt>
+            <dd class="mt-1 text-[14px] text-slate-900">Sảnh tòa nhà I, khu tự học trong trường</dd>
+          </div>
+          <div>
+            <dt class="text-[12px] font-medium uppercase tracking-[0.08em] text-slate-400">Ghi chú</dt>
+            <dd class="mt-1 text-[14px] leading-relaxed text-slate-600">Địa chỉ và email là thông tin minh họa cho đồ án.</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="lg:col-span-7">
+        <form id="feedback-form" class="rounded-2xl border border-slate-200 p-5 sm:p-6" novalidate>
+          <p class="text-[13px] font-semibold text-slate-900">Gửi góp ý</p>
+          <p class="mt-1 text-[12.5px] leading-relaxed text-slate-500">Không gửi email thật; nội dung chỉ hiển thị thông báo xác nhận trong trình duyệt.</p>
+
+          <div class="mt-5 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label for="fb-name" class="field-label">Họ tên</label>
+              <input id="fb-name" name="name" type="text" required class="field" placeholder="Nguyễn Minh An" autocomplete="name">
+            </div>
+            <div>
+              <label for="fb-email" class="field-label">Email</label>
+              <input id="fb-email" name="email" type="email" required class="field" placeholder="ban@example.com" autocomplete="email">
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label for="fb-message" class="field-label">Nội dung</label>
+            <textarea id="fb-message" name="message" rows="3" required class="field resize-y" placeholder="Thiết bị bạn muốn trạm bổ sung, hoặc góp ý về quy trình…"></textarea>
+          </div>
+
+          <div class="mt-5 flex flex-wrap items-center gap-3">
+            <button type="submit" class="btn btn-primary btn-sm">Gửi góp ý</button>
+            <p class="text-[12px] text-slate-400">Trường có dấu * là bắt buộc.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="border-t border-slate-200/70 bg-white">
+  <div class="mx-auto flex max-w-content flex-col gap-6 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between">
+    <div class="flex items-center gap-2.5">
+      <span class="grid h-7 w-7 place-items-center rounded-lg bg-slate-900 text-white">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>
+      </span>
+      <p class="text-[12.5px] leading-relaxed text-slate-500">
+        <span class="font-medium text-slate-700">UniRescue</span> — Mô hình thuê thiết bị học tập CSC00004.
+      </p>
+    </div>
+
+    <nav class="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px] text-slate-500" aria-label="Liên kết chân trang">
+      <a href="#products" class="hover:text-slate-900">Thiết bị</a>
+      <a href="#workflow" class="hover:text-slate-900">Cách mượn</a>
+      <a href="#about" class="hover:text-slate-900">Về nhóm</a>
+      <a href="#contact" class="hover:text-slate-900">Liên hệ</a>
+      <span class="text-slate-300">Khoa CNTT · ĐH Khoa học Tự nhiên – ĐHQG-HCM</span>
+    </nav>
+  </div>
+</footer>
+
+<!-- ============ CART DRAWER ============ -->
+<div id="cart-root" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+  <div id="cart-overlay" class="absolute inset-0 bg-slate-900/40 opacity-0 backdrop-blur-[1px]"></div>
+
+  <div id="cart-panel" class="absolute inset-y-0 right-0 flex w-full max-w-[480px] translate-x-full flex-col bg-white shadow-2xl">
+
+    <header class="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200/70 px-5">
+      <div class="flex items-baseline gap-2.5">
+        <h2 id="cart-title" class="text-[15px] font-semibold text-slate-900">Giỏ thuê</h2>
+        <span id="cart-count-label" class="text-[12px] text-slate-400">0 món</span>
+      </div>
+      <button type="button" id="cart-close" class="-mr-2 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900">
+        <span class="sr-only">Đóng giỏ thuê</span>
+        <svg class="h-[18px] w-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </header>
+
+    <div id="cart-body" class="thin-scroll flex-1 overflow-y-auto px-5">
+
+      <!-- STEP 1 -->
+      <section id="cart-step-items" class="py-5">
+        <div id="cart-items"></div>
+
+        <div id="cart-empty" class="hidden py-14 text-center">
+          <p class="text-[14px] font-medium text-slate-900">Giỏ thuê đang trống</p>
+          <p class="mx-auto mt-1.5 max-w-[30ch] text-[13px] leading-relaxed text-slate-500">Chọn một thiết bị trong danh mục để bắt đầu.</p>
+          <button type="button" id="cart-empty-action" class="btn btn-secondary btn-sm mt-5">Xem danh mục</button>
+        </div>
+
+        <div id="cart-controls" class="mt-5 space-y-5 border-t border-slate-200/70 pt-5">
+          <div>
+            <label for="rental-days" class="field-label">Thời hạn thuê</label>
+            <select id="rental-days" class="field">
+              <option value="1">1 ngày</option>
+              <option value="3">3 ngày</option>
+              <option value="7">7 ngày</option>
+            </select>
+            <p class="hint">Áp dụng cho thiết bị tính phí theo ngày. Combo và bộ pin tính một lần.</p>
+          </div>
+
+          <div>
+            <label for="promo-input" class="field-label">Mã giảm giá</label>
+            <div class="flex gap-2">
+              <input id="promo-input" type="text" class="field uppercase" placeholder="SV10" autocomplete="off" aria-describedby="promo-msg">
+              <button type="button" id="promo-apply" class="btn btn-secondary btn-sm shrink-0">Áp dụng</button>
+            </div>
+            <p id="promo-msg" class="hint">Mã demo: <span class="font-medium text-slate-600">SV10</span> — giảm 10% tiền thuê.</p>
+          </div>
+
+          <dl id="totals" class="space-y-2 border-t border-slate-200/70 pt-4 text-[13px]">
+            <div class="flex items-center justify-between gap-4">
+              <dt class="text-slate-500">Tiền thuê</dt>
+              <dd id="total-rent" class="font-medium tabular-nums text-slate-900">0đ</dd>
+            </div>
+            <div id="total-discount-row" class="hidden flex items-center justify-between gap-4">
+              <dt class="text-slate-500">Giảm giá <span id="discount-code" class="text-slate-400"></span></dt>
+              <dd id="total-discount" class="font-medium tabular-nums text-indigo-600">0đ</dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 border-t border-slate-200/70 pt-2.5">
+              <dt class="text-[13px] font-medium text-slate-900">Tổng dự kiến</dt>
+              <dd id="total-grand" class="text-[15px] font-semibold tabular-nums text-slate-900">0đ</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section id="cart-step-checkout" class="hidden py-5">
+        <form id="checkout-form" novalidate>
+          <div class="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3">
+            <svg class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-info"/></svg>
+            <p class="text-[12px] leading-relaxed text-slate-600">
+              Bản demo: thông tin bên dưới không được gửi đi hay lưu lại. Không có giao dịch thanh toán thật.
+            </p>
+          </div>
+
+          <div class="mt-5 space-y-4">
+            <div>
+              <label for="cust-student-id" class="field-label">Mã số sinh viên</label>
+              <input id="cust-student-id" type="text" required inputmode="numeric" class="field" placeholder="23123456" autocomplete="off">
+            </div>
+
+            <div>
+              <label for="cust-name" class="field-label">Họ tên người thuê</label>
+              <input id="cust-name" type="text" required class="field" value="Sinh viên Demo" autocomplete="name">
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="cust-phone" class="field-label">Số điện thoại</label>
+                <input id="cust-phone" type="tel" required class="field" value="0900000111" autocomplete="tel">
+              </div>
+              <div>
+                <label for="cust-location" class="field-label">Điểm hẹn</label>
+                <input id="cust-location" type="text" required class="field" placeholder="VD: Sảnh tòa nhà I" autocomplete="off">
+              </div>
+            </div>
+
+            <div>
+              <label for="cust-payment" class="field-label">Phương thức thanh toán (mô phỏng)</label>
+              <select id="cust-payment" class="field">
+                <option value="Tiền mặt khi nhận">Tiền mặt khi nhận thiết bị</option>
+                <option value="Ví điện tử (mô phỏng)">Ví điện tử</option>
+                <option value="Chuyển khoản (mô phỏng)">Chuyển khoản</option>
+              </select>
+            </div>
+
+            <label for="rental-agreement" class="flex cursor-pointer items-start gap-2.5 rounded-xl border border-slate-200 p-3.5 transition-colors hover:bg-slate-50">
+              <input id="rental-agreement" type="checkbox" required class="mt-0.5 h-4 w-4 shrink-0 accent-indigo-600">
+              <span class="text-[12px] leading-relaxed text-slate-600">
+                Tôi xác nhận tình trạng thiết bị khi nhận và đồng ý hoàn trả đúng thời hạn tại điểm hẹn đã chọn.
+              </span>
+            </label>
+          </div>
+        </form>
+
+        <button type="button" id="back-to-items" class="mt-5 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-slate-500 transition-colors hover:text-slate-900">
+          <span aria-hidden="true">←</span> Quay lại giỏ thuê
+        </button>
+      </section>
+
+      <!-- STEP 3 -->
+      <section id="cart-step-success" class="hidden py-10 text-center">
+        <span class="mx-auto grid h-12 w-12 place-items-center rounded-full bg-indigo-50 text-indigo-600">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-check"/></svg>
+        </span>
+        <h3 class="mt-4 text-[17px] font-semibold text-slate-900">Đã tạo yêu cầu thuê demo</h3>
+        <p class="mx-auto mt-1.5 max-w-[34ch] text-[13px] leading-relaxed text-slate-500">
+          Không có email xác nhận và không có khoản thanh toán nào được thực hiện.
+        </p>
+
+        <div id="order-receipt" class="mt-6 rounded-xl border border-slate-200 text-left"></div>
+      </section>
+    </div>
+
+    <footer id="cart-footer" class="shrink-0 border-t border-slate-200/70 bg-white px-5 py-4">
+      <div class="flex items-baseline justify-between gap-4">
+        <span class="text-[12.5px] text-slate-500">Tổng dự kiến</span>
+        <span id="footer-total" class="text-[16px] font-semibold tabular-nums text-slate-900">0đ</span>
+      </div>
+      <button type="button" id="cart-primary" class="btn btn-primary mt-3 w-full">
+        Tiếp tục nhập thông tin
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+      </button>
+      <p id="footer-note" class="mt-2.5 text-center text-[11.5px] text-slate-400">Bản demo — không phát sinh thanh toán.</p>
+    </footer>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div id="toast" class="pointer-events-none fixed bottom-5 left-1/2 z-[60] flex w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 items-center gap-4 rounded-xl bg-slate-900 px-4 py-3 text-white shadow-xl" role="status" aria-live="polite">
+  <p id="toast-message" class="min-w-0 flex-1 text-[13px] leading-snug"></p>
+  <button type="button" id="toast-action" class="pointer-events-auto shrink-0 rounded-md px-2 py-1 text-[12.5px] font-semibold text-indigo-300 transition-colors hover:bg-white/10 hover:text-white"></button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------------ *
+   * Data
+   * ------------------------------------------------------------------ */
+  var PRODUCTS = [
+    {
+      id: 1,
+      name: 'Combo vượt cạn phòng thi',
+      cat: 'urgent',
+      catLabel: 'Thi & thuyết trình',
+      price: 18000,
+      unit: '/ combo',
+      billing: 'once',
+      detail: 'Casio, bút chì, gôm, thước kẻ và pin dự phòng.',
+      image: 'https://images.pexels.com/photos/7111550/pexels-photo-7111550.jpeg?auto=compress&cs=tinysrgb&w=800',
+      alt: 'Máy tính, bút chì và giấy nhớ trên bàn học — Ảnh: Tara Winstead on Pexels'
+    },
+    {
+      id: 2,
+      name: 'Máy tính Casio fx-880BTG',
+      cat: 'urgent',
+      catLabel: 'Thi & thuyết trình',
+      price: 15000,
+      unit: '/ ngày',
+      billing: 'daily',
+      detail: 'Kèm nắp bảo vệ, pin đã kiểm tra trước khi giao.',
+      image: 'https://images.pexels.com/photos/8250936/pexels-photo-8250936.jpeg?auto=compress&cs=tinysrgb&w=800',
+      alt: 'Máy tính khoa học — Ảnh: PNW Production on Pexels'
+    },
+    {
+      id: 3,
+      name: 'Sạc laptop USB-C 65W',
+      cat: 'power',
+      catLabel: 'Sạc & pin',
+      price: 22000,
+      unit: '/ ngày',
+      billing: 'daily',
+      detail: 'USB-C Power Delivery 65W kèm cáp; kiểm tra công suất máy trước khi thuê.',
+      image: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=800&q=80',
+      alt: 'Củ sạc USB-C kèm cáp — Ảnh: Homemade Media on Unsplash'
+    },
+    {
+      id: 4,
+      name: 'Bút trình chiếu không dây',
+      cat: 'urgent',
+      catLabel: 'Thi & thuyết trình',
+      price: 18000,
+      unit: '/ ngày',
+      billing: 'daily',
+      detail: 'Kèm đầu thu USB; điều khiển slide và đánh dấu nội dung.',
+      image: 'https://images.pexels.com/photos/33797485/pexels-photo-33797485.jpeg?auto=compress&cs=tinysrgb&w=800',
+      alt: 'Điều khiển trình chiếu cầm tay — Ảnh: Andrey Matveev on Pexels'
+    },
+    {
+      id: 5,
+      name: 'Pin AA / AAA dự phòng',
+      cat: 'power',
+      catLabel: 'Sạc & pin',
+      price: 8000,
+      unit: '/ bộ',
+      billing: 'once',
+      detail: 'Chọn cỡ AA hoặc AAA; tính phí một lần theo bộ.',
+      image: 'https://images.pexels.com/photos/6015268/pexels-photo-6015268.jpeg?auto=compress&cs=tinysrgb&w=800',
+      alt: 'Bộ pin AA trên nền sáng — Ảnh: mohamed abdelghaffar on Pexels'
+    },
+    {
+      id: 6,
+      name: 'Ổ cắm điện 3 chấu',
+      cat: 'extras',
+      catLabel: 'Kết nối & ổ cắm',
+      price: 10000,
+      unit: '/ ngày',
+      billing: 'daily',
+      detail: 'Dây nguồn gọn, kiểm tra an toàn trước khi giao.',
+      image: 'https://images.pexels.com/photos/16886334/pexels-photo-16886334.jpeg?auto=compress&cs=tinysrgb&w=800',
+      alt: 'Ổ cắm điện nhiều chấu — Ảnh: Саша Алалыкин on Pexels'
+    },
+    {
+      id: 7,
+      name: 'Hub chuyển đổi USB-C',
+      cat: 'extras',
+      catLabel: 'Kết nối & ổ cắm',
+      price: 20000,
+      unit: '/ ngày',
+      billing: 'daily',
+      detail: 'Cổng HDMI, USB-A và USB-C; kiểm tra cổng máy trước khi thuê.',
+      image: 'https://images.unsplash.com/photo-1760376789487-994070337c76?auto=format&fit=crop&w=800&q=80',
+      alt: 'Hub chuyển đổi USB-C nhiều cổng — Ảnh: Barry A on Unsplash'
+    }
+  ];
+
+  var CATEGORIES = [
+    { id: 'all', label: 'Tất cả' },
+    { id: 'urgent', label: 'Thi & thuyết trình' },
+    { id: 'power', label: 'Sạc & pin' },
+    { id: 'extras', label: 'Kết nối & ổ cắm' }
+  ];
+
+  var PROMO_CODES = { SV10: 10 };
+
+  /* ------------------------------------------------------------------ *
+   * State
+   * ------------------------------------------------------------------ */
+  var cart = {};            // { productId: qty }
+  var days = 1;
+  var promo = null;         // { code, percent }
+  var category = 'all';
+  var step = 'items';
+  var lastFocused = null;
+  var hasReceipt = false;
+
+  /* ------------------------------------------------------------------ *
+   * Helpers
+   * ------------------------------------------------------------------ */
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+  function formatVND(value) {
+    return Math.round(value).toLocaleString('vi-VN') + 'đ';
+  }
+
+  function productById(id) {
+    for (var i = 0; i < PRODUCTS.length; i++) {
+      if (PRODUCTS[i].id === Number(id)) return PRODUCTS[i];
+    }
+    return null;
+  }
+
+  function cartCount() {
+    return Object.keys(cart).reduce(function (sum, id) { return sum + cart[id]; }, 0);
+  }
+
+  function lineTotal(product, qty) {
+    return product.price * qty * (product.billing === 'daily' ? days : 1);
+  }
+
+  function totals() {
+    var rent = 0;
+    Object.keys(cart).forEach(function (id) {
+      var p = productById(id);
+      if (p) rent += lineTotal(p, cart[id]);
+    });
+    var discount = promo ? Math.round(rent * promo.percent / 100) : 0;
+    return { rent: rent, discount: discount, grand: rent - discount };
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Product grid
+   * ------------------------------------------------------------------ */
+  function matches(product, query) {
+    if (category !== 'all' && product.cat !== category) return false;
+    if (!query) return true;
+    var haystack = [product.name, product.detail, product.catLabel, product.unit].join(' ').toLowerCase();
+    return haystack.indexOf(query) !== -1;
+  }
+
+  function cardHTML(product) {
+    return '' +
+      '<article class="card" id="product-' + product.id + '" data-id="' + product.id + '">' +
+        '<div class="card-media aspect-[4/3]">' +
+          '<img src="' + product.image + '" alt="' + product.alt + '" width="600" height="450" loading="lazy" decoding="async" onerror="this.style.visibility=\'hidden\'">' +
+          '<span class="card-badge">' + product.catLabel + '</span>' +
+        '</div>' +
+        '<div class="flex flex-1 flex-col p-4">' +
+          '<h3 class="text-[15px] font-semibold leading-snug text-slate-900">' + product.name + '</h3>' +
+          '<p class="mt-1.5 clamp-2 text-[12.5px] leading-relaxed text-slate-500">' + product.detail + '</p>' +
+          '<div class="mt-4 flex items-end justify-between gap-3 border-t border-slate-200/70 pt-3">' +
+            '<p class="leading-tight">' +
+              '<span class="text-[15px] font-semibold tabular-nums text-slate-900">' + formatVND(product.price) + '</span>' +
+              '<span class="ml-0.5 text-[12px] text-slate-400">' + product.unit + '</span>' +
+            '</p>' +
+            '<button type="button" class="card-cta" data-add="' + product.id + '">' +
+              '<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus"/></svg>' +
+              'Thêm vào giỏ<span class="sr-only"> — ' + product.name + '</span>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+  }
+
+  function renderProducts() {
+    var query = ($('#search-input').value || '').trim().toLowerCase();
+    var list = PRODUCTS.filter(function (p) { return matches(p, query); });
+
+    $('#product-grid').innerHTML = list.map(cardHTML).join('');
+    $('#empty-state').classList.toggle('hidden', list.length > 0);
+    $('#result-count').textContent = list.length + ' thiết bị' +
+      (list.length === PRODUCTS.length ? ' đang cho thuê' : ' khớp bộ lọc');
+  }
+
+  function renderFilters() {
+    $('#filters').innerHTML = CATEGORIES.map(function (cat) {
+      var count = cat.id === 'all'
+        ? PRODUCTS.length
+        : PRODUCTS.filter(function (p) { return p.cat === cat.id; }).length;
+
+      return '<button type="button" class="chip" data-cat="' + cat.id + '" aria-pressed="' +
+        (category === cat.id ? 'true' : 'false') + '">' +
+        cat.label + '<span class="chip-count">' + count + '</span></button>';
+    }).join('');
+  }
+
+  function setCategory(next) {
+    category = next;
+    renderFilters();
+    renderProducts();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Cart rendering
+   * ------------------------------------------------------------------ */
+  function cartRowHTML(product, qty) {
+    var daily = product.billing === 'daily';
+    var calc = daily
+      ? formatVND(product.price) + ' × ' + days + ' ngày × ' + qty
+      : formatVND(product.price) + ' × ' + qty + ' ' + product.unit.replace('/', '').trim();
+
+    return '' +
+      '<div class="flex gap-3 border-b border-slate-200/70 py-4 first:pt-0">' +
+        '<img src="' + product.image + '" alt="" width="56" height="56" loading="lazy" decoding="async" class="h-14 w-14 shrink-0 rounded-lg border border-slate-200/70 object-cover">' +
+        '<div class="min-w-0 flex-1">' +
+          '<div class="flex items-start justify-between gap-2">' +
+            '<p class="text-[13px] font-medium leading-snug text-slate-900">' + product.name + '</p>' +
+            '<button type="button" data-remove="' + product.id + '" class="-mr-1 -mt-1 shrink-0 rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700">' +
+              '<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-trash"/></svg>' +
+              '<span class="sr-only">Xóa ' + product.name + '</span>' +
+            '</button>' +
+          '</div>' +
+          '<p class="mt-0.5 text-[11.5px] tabular-nums text-slate-500">' + calc + '</p>' +
+          '<div class="mt-2.5 flex items-center justify-between gap-3">' +
+            '<div class="inline-flex items-center rounded-lg border border-slate-200">' +
+              '<button type="button" data-qty="' + product.id + '" data-delta="-1" class="grid h-9 w-9 place-items-center rounded-l-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">' +
+                '<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-minus"/></svg>' +
+                '<span class="sr-only">Giảm số lượng ' + product.name + '</span>' +
+              '</button>' +
+              '<span class="w-7 text-center text-[12.5px] font-medium tabular-nums text-slate-900" aria-live="polite">' + qty + '</span>' +
+              '<button type="button" data-qty="' + product.id + '" data-delta="1" class="grid h-9 w-9 place-items-center rounded-r-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900">' +
+                '<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-plus"/></svg>' +
+                '<span class="sr-only">Tăng số lượng ' + product.name + '</span>' +
+              '</button>' +
+            '</div>' +
+            '<span class="text-[13px] font-semibold tabular-nums text-slate-900">' + formatVND(lineTotal(product, qty)) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderCart() {
+    var ids = Object.keys(cart).filter(function (id) { return cart[id] > 0; });
+    var count = cartCount();
+    var sum = totals();
+
+    $('#cart-badge').textContent = count;
+    $('#cart-badge-sr').textContent = count + ' thiết bị trong giỏ';
+    $('#cart-count-label').textContent = count + ' món';
+
+    $('#cart-items').innerHTML = ids.map(function (id) {
+      return cartRowHTML(productById(id), cart[id]);
+    }).join('');
+
+    var isEmpty = ids.length === 0;
+    $('#cart-empty').classList.toggle('hidden', !isEmpty);
+    $('#cart-controls').classList.toggle('hidden', isEmpty);
+
+    $('#total-rent').textContent = formatVND(sum.rent);
+    $('#total-discount').textContent = '−' + formatVND(sum.discount);
+    $('#total-discount-row').classList.toggle('hidden', !promo);
+    $('#discount-code').textContent = promo ? '(' + promo.code + ')' : '';
+    $('#total-grand').textContent = formatVND(sum.grand);
+    $('#footer-total').textContent = formatVND(sum.grand);
+
+    applyPaymentLabels(isEmpty);
+  }
+
+  function applyPaymentLabels(isEmpty) {
+    var primary = $('#cart-primary');
+
+    if (step === 'items') {
+      primary.innerHTML = 'Tiếp tục nhập thông tin' +
+        '<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow-right"/></svg>';
+      primary.disabled = isEmpty;
+    } else if (step === 'checkout') {
+      primary.innerHTML = 'Gửi yêu cầu thuê demo';
+      primary.disabled = false;
+    }
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Cart actions
+   * ------------------------------------------------------------------ */
+  function addToCart(id) {
+    if (hasReceipt) {
+      hasReceipt = false;
+      $('#order-receipt').innerHTML = '';
+      step = 'items';
+      $('#cart-step-success').classList.add('hidden');
+      $('#cart-step-items').classList.remove('hidden');
+      $('#cart-footer').classList.remove('hidden');
+      $('#cart-title').textContent = 'Giỏ thuê';
+    }
+    cart[id] = (cart[id] || 0) + 1;
+    renderCart();
+    var product = productById(id);
+    showToast('Đã thêm “' + product.name + '” vào giỏ thuê.', 'Xem giỏ', openCart);
+  }
+
+  function changeQty(id, delta) {
+    if (!cart[id]) return;
+    cart[id] += delta;
+    if (cart[id] <= 0) delete cart[id];
+    renderCart();
+  }
+
+  function removeItem(id) {
+    delete cart[id];
+    renderCart();
+  }
+
+  function applyPromo() {
+    var input = $('#promo-input');
+    var msg = $('#promo-msg');
+    var code = (input.value || '').trim().toUpperCase();
+
+    if (!code) {
+      promo = null;
+      msg.textContent = 'Nhập mã để áp dụng. Mã demo: SV10 — giảm 10% tiền thuê.';
+      renderCart();
+      return;
+    }
+    if (PROMO_CODES[code]) {
+      promo = { code: code, percent: PROMO_CODES[code] };
+      input.value = '';
+      msg.textContent = 'Đã áp dụng ' + code + ' — giảm ' + promo.percent + '% tiền thuê.';
+      msg.style.color = '#4338ca';
+      renderCart();
+      return;
+    }
+    promo = null;
+    msg.textContent = 'Mã “' + code + '” không hợp lệ trong bản demo.';
+    msg.style.color = '#b91c1c';
+    renderCart();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Drawer
+   * ------------------------------------------------------------------ */
+  function lockScroll(lock) {
+    document.body.style.overflow = lock ? 'hidden' : '';
+  }
+
+  function openCart() {
+    lastFocused = document.activeElement;
+    var root = $('#cart-root');
+    root.classList.remove('hidden');
+    lockScroll(true);
+    requestAnimationFrame(function () { root.classList.add('is-open'); });
+    setStep(hasReceipt ? 'success' : 'items');
+    setTimeout(function () { $('#cart-close').focus(); }, 60);
+  }
+
+  function closeCart() {
+    var root = $('#cart-root');
+    root.classList.remove('is-open');
+    lockScroll(false);
+    setTimeout(function () {
+      root.classList.add('hidden');
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+    }, 240);
+  }
+
+  function setStep(next) {
+    step = next;
+    $('#cart-step-items').classList.toggle('hidden', next !== 'items');
+    $('#cart-step-checkout').classList.toggle('hidden', next !== 'checkout');
+    $('#cart-step-success').classList.toggle('hidden', next !== 'success');
+
+    $('#cart-title').textContent =
+      next === 'checkout' ? 'Thông tin nhận' :
+      next === 'success' ? 'Yêu cầu thuê' : 'Giỏ thuê';
+
+    var footer = $('#cart-footer');
+    footer.classList.toggle('hidden', next === 'success');
+
+    $('#back-to-items').classList.toggle('hidden', next !== 'checkout');
+    $('#cart-body').scrollTop = 0;
+
+    applyPaymentLabels(cartCount() === 0);
+  }
+
+  function goCheckout() {
+    if (cartCount() === 0) return;
+    setStep('checkout');
+    setTimeout(function () { $('#cust-student-id').focus(); }, 80);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Order
+   * ------------------------------------------------------------------ */
+  function receiptItemHTML(product, qty) {
+    var suffix = product.billing === 'daily' ? ' · ' + days + ' ngày' : ' · ' + product.unit.replace('/', '').trim();
+    return '<li class="flex items-baseline justify-between gap-3 py-1">' +
+      '<span class="text-slate-600">' + qty + ' × ' + product.name + suffix + '</span>' +
+      '<span class="shrink-0 font-medium tabular-nums text-slate-900">' + formatVND(lineTotal(product, qty)) + '</span>' +
+      '</li>';
+  }
+
+  function placeOrder() {
+    var form = $('#checkout-form');
+    if (!form.reportValidity()) return;
+
+    var snapshot = {
+      id: 'UR-' + Math.floor(100000 + Math.random() * 900000),
+      studentId: $('#cust-student-id').value.trim(),
+      name: $('#cust-name').value.trim(),
+      phone: $('#cust-phone').value.trim(),
+      location: $('#cust-location').value.trim(),
+      payment: $('#cust-payment').value,
+      days: days,
+      items: Object.keys(cart).map(function (id) {
+        return { product: productById(id), qty: cart[id] };
+      }),
+      totals: totals(),
+      promo: promo
+    };
+
+    var rows = snapshot.items.map(function (item) {
+      return receiptItemHTML(item.product, item.qty);
+    }).join('');
+
+    $('#order-receipt').innerHTML = '' +
+      '<div class="divide-y divide-slate-200/70 border-b border-slate-200/70 px-4 py-1 text-[12.5px]">' +
+        '<div class="flex items-baseline justify-between gap-3 py-2.5">' +
+          '<span class="text-slate-500">Mã yêu cầu</span>' +
+          '<span class="font-semibold tabular-nums text-slate-900">' + snapshot.id + '</span>' +
+        '</div>' +
+        '<div class="flex items-baseline justify-between gap-3 py-2.5">' +
+          '<span class="text-slate-500">Người thuê</span>' +
+          '<span class="text-right font-medium text-slate-900">' + snapshot.name + ' · ' + snapshot.studentId + '</span>' +
+        '</div>' +
+        '<div class="flex items-baseline justify-between gap-3 py-2.5">' +
+          '<span class="text-slate-500">Điểm hẹn</span>' +
+          '<span class="text-right font-medium text-slate-900">' + snapshot.location + '</span>' +
+        '</div>' +
+        '<div class="flex items-baseline justify-between gap-3 py-2.5">' +
+          '<span class="text-slate-500">Thời hạn</span>' +
+          '<span class="font-medium text-slate-900">' + snapshot.days + ' ngày</span>' +
+        '</div>' +
+        '<div class="flex items-baseline justify-between gap-3 py-2.5">' +
+          '<span class="text-slate-500">Thanh toán</span>' +
+          '<span class="text-right font-medium text-slate-900">' + snapshot.payment + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<ul class="border-b border-slate-200/70 px-4 py-3 text-[12.5px]">' + rows + '</ul>' +
+      '<dl class="space-y-1.5 px-4 py-3 text-[12.5px]">' +
+        '<div class="flex items-baseline justify-between gap-3">' +
+          '<dt class="text-slate-500">Tiền thuê</dt>' +
+          '<dd class="font-medium tabular-nums text-slate-900">' + formatVND(snapshot.totals.rent) + '</dd>' +
+        '</div>' +
+        (snapshot.promo
+          ? '<div class="flex items-baseline justify-between gap-3">' +
+              '<dt class="text-slate-500">Giảm giá (' + snapshot.promo.code + ')</dt>' +
+              '<dd class="font-medium tabular-nums text-indigo-600">−' + formatVND(snapshot.totals.discount) + '</dd>' +
+            '</div>'
+          : '') +
+        '<div class="flex items-baseline justify-between gap-3 border-t border-slate-200/70 pt-2">' +
+          '<dt class="font-medium text-slate-900">Tổng dự kiến</dt>' +
+          '<dd class="text-[14px] font-semibold tabular-nums text-slate-900">' + formatVND(snapshot.totals.grand) + '</dd>' +
+        '</div>' +
+      '</dl>';
+
+    setStep('success');
+    hasReceipt = true;
+    cart = {};
+    renderCart();
+    setTimeout(function () { $('#cart-step-success').scrollIntoView({ block: 'center' }); }, 60);
+  }
+
+  function resetFlow() {
+    cart = {};
+    promo = null;
+    days = 1;
+    $('#rental-days').value = '1';
+    $('#promo-input').value = '';
+    $('#promo-msg').textContent = 'Mã demo: SV10 — giảm 10% tiền thuê.';
+    $('#promo-msg').style.color = '';
+    $('#checkout-form').reset();
+    $('#cust-name').value = 'Sinh viên Demo';
+    $('#cust-phone').value = '0900000111';
+    renderCart();
+    setStep('items');
+    hasReceipt = false;
+    closeCart();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Toast
+   * ------------------------------------------------------------------ */
+  var toastTimer = null;
+
+  function showToast(message, actionLabel, action) {
+    var toast = $('#toast');
+    var actionBtn = $('#toast-action');
+
+    $('#toast-message').textContent = message;
+
+    if (actionLabel) {
+      actionBtn.textContent = actionLabel;
+      actionBtn.classList.remove('hidden');
+      actionBtn.onclick = function () {
+        if (action) action();
+        hideToast();
+      };
+    } else {
+      actionBtn.classList.add('hidden');
+    }
+
+    toast.classList.remove('hidden');
+    requestAnimationFrame(function () { toast.classList.add('is-visible'); });
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 4200);
+  }
+
+  function hideToast() {
+    var toast = $('#toast');
+    toast.classList.remove('is-visible');
+    setTimeout(function () { toast.classList.add('hidden'); }, 220);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Events
+   * ------------------------------------------------------------------ */
+  document.addEventListener('click', function (event) {
+    var addBtn = event.target.closest('[data-add]');
+    if (addBtn) { addToCart(addBtn.getAttribute('data-add')); return; }
+
+    var qtyBtn = event.target.closest('[data-qty]');
+    if (qtyBtn) {
+      changeQty(qtyBtn.getAttribute('data-qty'), Number(qtyBtn.getAttribute('data-delta')));
+      return;
+    }
+
+    var removeBtn = event.target.closest('[data-remove]');
+    if (removeBtn) { removeItem(removeBtn.getAttribute('data-remove')); return; }
+
+    var chip = event.target.closest('.chip');
+    if (chip) { setCategory(chip.getAttribute('data-cat')); return; }
+
+    var jump = event.target.closest('.jump');
+    if (jump) {
+      if (category !== 'all' || $('#search-input').value.trim()) {
+        category = 'all';
+        $('#search-input').value = '';
+        renderFilters();
+        renderProducts();
+      }
+      var card = document.getElementById('product-' + jump.getAttribute('data-target'));
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('is-highlight');
+        setTimeout(function () { card.classList.remove('is-highlight'); }, 1800);
+        var cta = card.querySelector('[data-add]');
+        if (cta) setTimeout(function () { cta.focus({ preventScroll: true }); }, 500);
+      }
+    }
+  });
+
+  $('#search-input').addEventListener('input', renderProducts);
+
+  $('#reset-filters').addEventListener('click', function () {
+    category = 'all';
+    $('#search-input').value = '';
+    renderFilters();
+    renderProducts();
+  });
+
+  $('#cart-open').addEventListener('click', openCart);
+  $('#cart-close').addEventListener('click', closeCart);
+  $('#cart-overlay').addEventListener('click', closeCart);
+
+  $('#cart-empty-action').addEventListener('click', function () {
+    closeCart();
+    setTimeout(function () {
+      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+    }, 260);
+  });
+
+  $('#rental-days').addEventListener('change', function (event) {
+    days = Number(event.target.value);
+    renderCart();
+  });
+
+  $('#promo-apply').addEventListener('click', applyPromo);
+  $('#promo-input').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') { event.preventDefault(); applyPromo(); }
+  });
+
+  $('#back-to-items').addEventListener('click', function () { setStep('items'); });
+
+  $('#cart-primary').addEventListener('click', function () {
+    if (step === 'items') { goCheckout(); return; }
+    if (step === 'checkout') { placeOrder(); }
+  });
+
+  $('#checkout-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    placeOrder();
+  });
+
+  var successReset = document.createElement('button');
+  successReset.type = 'button';
+  successReset.className = 'btn btn-secondary mt-6 w-full';
+  successReset.textContent = 'Tiếp tục chọn thiết bị';
+  successReset.addEventListener('click', resetFlow);
+  $('#cart-step-success').appendChild(successReset);
+
+  $('#feedback-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    if (!event.target.reportValidity()) return;
+    event.target.reset();
+    showToast('Đã ghi nhận góp ý trong bản demo.');
+  });
+
+  $('#menu-toggle').addEventListener('click', function () {
+    var menu = $('#mobile-menu');
+    var open = menu.classList.toggle('hidden') === false;
+    this.setAttribute('aria-expanded', String(open));
+  });
+
+  $$('#mobile-menu a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      $('#mobile-menu').classList.add('hidden');
+      $('#menu-toggle').setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if ($('#cart-root').classList.contains('hidden')) return;
+
+    if (event.key === 'Escape') {
+      closeCart();
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      const focusables = Array.prototype.filter.call(
+        document.querySelectorAll('#cart-panel button, #cart-panel input, #cart-panel select, #cart-panel textarea, #cart-panel a[href]'),
+        function (el) { return !el.disabled && el.offsetParent !== null; }
+      );
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  });
+
+  var header = $('#site-header');
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 8) header.classList.add('shadow-hair');
+    else header.classList.remove('shadow-hair');
+  }, { passive: true });
+
+  /* ------------------------------------------------------------------ *
+   * Init
+   * ------------------------------------------------------------------ */
+  renderFilters();
+  renderProducts();
+  renderCart();
+  setStep('items');
+})();
+</script>
+</body>
+</html>
